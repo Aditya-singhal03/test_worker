@@ -1,13 +1,10 @@
-FROM python:3.11-slim-bookworm
+FROM runpod/worker-comfyui:5.1.0-base
 
-# Declare build-time argument
-ARG HF_TOKEN
+RUN mkdir -p \
+    /comfyui/models/checkpoints/FLUX1 \
+    /comfyui/models/loras \
+    "/comfyui/models/controlnet/FLUX.1/InstantX-FLUX1-Dev-Union" \
+    /comfyui/models/upscale_models
 
-# Echo during build (will be empty if not passed explicitly via --build-arg)
-RUN echo "🔧 Build-time HF_TOKEN is: $HF_TOKEN"
-
-# Pass build arg to runtime env
-ENV HF_TOKEN=${HF_TOKEN}
-
-# Runtime echo
-CMD ["sh", "-c", "echo 🟢 Runtime HF_TOKEN is: $HF_TOKEN"]
+# --- Checkpoints ---
+RUN comfy model download --url "https://huggingface.co/singhal4896/lily_lora/resolve/main/flux1-dev.safetensors?download=true" --relative-path models/checkpoints --filename "flux1-dev.sft"
